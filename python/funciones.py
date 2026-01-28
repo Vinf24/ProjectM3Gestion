@@ -1,12 +1,17 @@
 """ FUNCIONES """
 
 import json
+import statistics
 
 def promedio_notas(notas):
     """ Calcula el promedio de las notas """
     if not notas:
         return 0
     return sum(notas) / len(notas)
+
+def estado_aprobacion(promedio):
+    """ Determina si el estudiante está aprobado o reprobado """
+    return "aprobado" if promedio >= 7 else "reprobado"
 
 def pedir_nombre():
     """ Agrega nombre al estudiante """
@@ -65,8 +70,7 @@ def crear_id(estudiantes):
     """ Crea ID único para cada estudiante """
     if not estudiantes:
         return 1
-    else:
-        return max(estudiantes.keys()) + 1
+    return max(estudiantes.keys()) + 1
 
 def agregar_estudiante(estudiantes):
     """ Agrega estudiante a la lista """
@@ -172,7 +176,7 @@ def valorar_estudiante(estudiantes):
         print("El estudiante no tiene notas registradas")
         return
     promedio = promedio_notas(estudiante["notas"])
-    estado = "aprobado" if promedio >= 7 else "reprobado"
+    estado = estado_aprobacion(promedio)
 
     print(
         f"{estudiante['nombre']} de {estudiante['ciudad']} "
@@ -211,8 +215,8 @@ def buscar_por_ciudad(estudiantes):
     ciudad_seleccionada = ciudades[idx - 1]
 
     resultados = [
-        (id_, e["nombre"], e["edad"]) 
-        for id_, e in estudiantes.items() 
+        (idx, e["nombre"], e["edad"]) 
+        for idx, e in estudiantes.items() 
         if e["ciudad"] == ciudad_seleccionada
     ]
     cantidad = len(resultados)
@@ -221,8 +225,8 @@ def buscar_por_ciudad(estudiantes):
         print("No se encontraron estudiantes en esa ciudad")
         return
     print(f"\nEstudiantes en {ciudad_seleccionada}:")
-    for id_, nombre, edad in resultados:
-        print(f"- ID: {id_} | {nombre} ({edad} años)")
+    for idx, nombre, edad in resultados:
+        print(f"- ID: {idx} | {nombre} ({edad} años)")
 
     print(f"\nTotal encontrados: {cantidad} estudiante(s)")
 
@@ -280,31 +284,55 @@ def resumen_estadisticas(estudiantes):
     if not estudiantes:
         print("No hay estudiantes registrados")
         return
-    
+
     total = len(estudiantes)
     aprobados = 0
     reprobados = 0
-    promedios = []
+    datos_promedios = []
 
-    for estudiante in estudiantes.values():
+    for idx, estudiante in estudiantes.items():
         if estudiante["notas"]:
             promedio = promedio_notas(estudiante["notas"])
-            promedios.append(promedio)
-            if promedio >= 7:
+            datos_promedios.append((idx, estudiante['nombre'], promedio))
+            estado = estado_aprobacion(promedio)
+            if estado == "aprobado":
                 aprobados += 1
             else:
                 reprobados += 1
 
-    if not promedios:
+    if not datos_promedios:
         print("No hay notas para generar estadísticas")
         return
 
+    promedios = [p for _, _, p in datos_promedios]
+    promedio_general = sum(promedios) / len(promedios)
+    desviacion = statistics.stdev(promedios) if len(promedios) > 1 else 0
+
     porcentaje_aprobados = (aprobados / total) * 100
     porcentaje_reprobados = (reprobados / total) * 100
-    promedio_general = sum(promedios) / len(promedios)
 
     print("\n---Resumen Estadístico---")
     print(f"Total de estudiantes: {total}")
     print(f"Estudiantes aprobados: {aprobados} ({porcentaje_aprobados:.2f}%)")
     print(f"Estudiantes reprobados: {reprobados} ({porcentaje_reprobados:.2f}%)")
     print(f"Promedio general de notas: {promedio_general:.2f}\n")
+
+    if desviacion == 0:
+        print("No hay suficientes datos para calcular la desviación estándar")
+        return
+
+    umbral = 2*desviacion
+    atipicos = [
+        (idx, nombre, promedio)
+        for idx, nombre, promedio in datos_promedios
+        if abs(promedio - promedio_general) > umbral
+    ]
+
+    if not atipicos:
+        print("No hay estudiantes con notas atipicas")
+        return
+
+    print("Estudiantes con notas atipicas:")
+    print("\n⚠️ Requiere atención! ⚠️\n")
+    for idx, nombre, promedio in atipicos:
+        print(f"- ID: {idx} | {nombre} ({promedio:.2f})")
