@@ -1,0 +1,7 @@
+Lista de estudiantes:
+
+ID: 1
+Nombre: Jorge
+Edad: 34
+Ciudad: Arica
+Notas: [7.0, 5.0, 6.0]

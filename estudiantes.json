@@ -1,0 +1,12 @@
+{
+    "1": {
+        "nombre": "Jorge",
+        "edad": 34,
+        "ciudad": "Arica",
+        "notas": [
+            7.0,
+            5.0,
+            6.0
+        ]
+    }
+}
