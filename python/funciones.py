@@ -63,9 +63,11 @@ def pedir_notas(estudiantes):
     notas = estudiante["notas"]
 
     for p in range(1, periodo):
-        clave_periodo = f"p{p}"
-        if notas[clave_periodo] is None:
-            notas[clave_periodo] = 1
+        clave = f"p{p}"
+        if notas[clave] is None:
+            notas[clave] = 1
+
+    clave_periodo = f"p{periodo}"
 
     while True:
         try:
@@ -73,6 +75,7 @@ def pedir_notas(estudiantes):
             if 1 <= nota <= 7:
                 notas[clave_periodo] = nota
                 print("Nota registrada")
+                imprimir_estudiantes(estudiantes)
                 break
             raise ValueError
         except ValueError:
@@ -177,11 +180,12 @@ def valorar_estudiante(estudiantes):
         return
 
     estudiante = estudiantes[idx]
+    promedio = promedio_notas(estudiante["notas"])
 
-    if not estudiante["notas"]:
+    if promedio == 0:
         print("El estudiante no tiene notas registradas")
         return
-    promedio = promedio_notas(estudiante["notas"])
+
     estado = estado_aprobacion(promedio)
 
     print(
@@ -217,8 +221,8 @@ def buscar_por_ciudad(estudiantes):
     ciudad_seleccionada = ciudades[idx - 1]
 
     resultados = [
-        (idx, e["nombre"], e["edad"]) 
-        for idx, e in estudiantes.items() 
+        (idx, e["nombre"], e["edad"])
+        for idx, e in estudiantes.items()
         if e["ciudad"] == ciudad_seleccionada
     ]
     cantidad = len(resultados)
@@ -288,8 +292,8 @@ def resumen_estadisticas(estudiantes):
     print(f"Promedio general de notas: {metricas['promedio_general']:.2f}\n")
 
     atipicos = detectar_atipicos(
-        datos, 
-        metricas['promedio_general'], 
+        datos,
+        metricas['promedio_general'],
         metricas['desviacion']
     )
 
@@ -324,13 +328,13 @@ def cerrar_temporada_curso(estudiantes):
         )
 
     print("\nAño cerrado\n")
+    guardar_resumen_anual(estudiantes)
 
 def guardar_resumen_anual(estudiantes):
     """ Transcribir los datos a forma más legible """
     resumen = generar_resumen_anual(estudiantes)
 
     if resumen is None:
-        print("\nAño no cerrado\n")
         return
 
     with open("resumen_anual.txt", "w", encoding="utf-8") as f:
@@ -356,3 +360,17 @@ def guardar_resumen_anual(estudiantes):
                 )
 
     print("\nResumen anual guardado en resumen_anual.txt\n")
+
+def reiniciar_curso(estudiantes):
+    """ Reinicia el curso """
+    periodo = determinar_periodo()
+    if periodo != 1:
+        return
+
+    for estudiante in estudiantes.values():
+        estudiante["notas"] = {"p1": None, "p2": None, "p3": None}
+        estudiante["notas_finales"] = None
+    print("\nCurso reiniciado\n")
+    guardar_resumen_anual(estudiantes)
+    json_estudiantes(estudiantes)
+    

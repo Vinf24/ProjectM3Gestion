@@ -1,0 +1,8 @@
+Resumen Anual
+Total estudiantes: 6
+Aprobados: 0 (0.00%)
+Reprobados: 6 (100.00%)
+Promedio general: 1.22
+
+⚠️ Estudiantes con notas atípicas: ⚠️
+- ID 6 | Juan (2.33)

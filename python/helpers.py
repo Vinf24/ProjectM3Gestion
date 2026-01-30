@@ -7,11 +7,17 @@ def promedio_notas(notas):
     """ Calcula el promedio de las notas """
     if not notas:
         return 0
-    return sum(notas) / len(notas)
+    if isinstance(notas, dict):
+        valores = [n for n in notas.values() if n is not None]
+    else:
+        valores = list(notas)
+    if not valores:
+        return 0
+    return sum(valores) / len(valores)
 
 def estado_aprobacion(promedio):
     """ Determina si el estudiante está aprobado o reprobado """
-    return "aprobado" if promedio >= 7 else "reprobado"
+    return "aprobado" if promedio >= 4 else "reprobado"
 
 def calcular_metricas(datos):
     """ Calcula métricas de los datos """
@@ -31,7 +37,7 @@ def calcular_metricas(datos):
         "desviacion": desviacion
     }
 
-def detectar_atipicos(datos, promdio_general, desviacion):
+def detectar_atipicos(datos, promedio_general, desviacion):
     """ Detecta estudiantes con notas atipicas """
     if desviacion == 0:
         return []
@@ -40,7 +46,7 @@ def detectar_atipicos(datos, promdio_general, desviacion):
     return [
         (idx, nombre, promedio)
         for idx, nombre, promedio in datos
-        if abs(promedio - promdio_general) > umbral
+        if abs(promedio - promedio_general) > umbral
     ]
 
 def datos_finales(estudiantes):
@@ -80,7 +86,7 @@ def busqueda_binaria_ids(ids, objetivo, inicio, fin):
 
 def determinar_periodo():
     """ Determina periodo según minuto """
-    minuto = datetime.now().minute 
+    minuto = datetime.now().minute
     ciclo = minuto % 10
     if ciclo <= 2:
         return 1
