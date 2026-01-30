@@ -2,12 +2,14 @@
 
 from datos import estudiantes
 from funciones import agregar_estudiante, actualizar_estudiante, mostrar_estudiante
-from funciones import eliminar_estudiante, valorar_estudiante
+from funciones import eliminar_estudiante, valorar_estudiante, cerrar_temporada_curso
 from funciones import buscar_por_ciudad, json_estudiantes, resumen_estadisticas
+from funciones import guardar_resumen_anual
 
 while True:
     try:
         # Menú de opciones
+        cerrar_temporada_curso(estudiantes)
         print("\n---Gestión de Estudiantes---")
         print("1. Agregar estudiante")
         print("2. Actualizar estudiante")
@@ -34,6 +36,8 @@ while True:
             case 7:
                 resumen_estadisticas(estudiantes)
             case 8:
+                cerrar_temporada_curso(estudiantes)
+                guardar_resumen_anual(estudiantes)
                 json_estudiantes(estudiantes)
                 break
             case _:

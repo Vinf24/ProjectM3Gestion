@@ -1,17 +1,9 @@
-""" FUNCIONES """
+""" FUNCIONES PRINCIPALES """
 
 import json
-import statistics
-
-def promedio_notas(notas):
-    """ Calcula el promedio de las notas """
-    if not notas:
-        return 0
-    return sum(notas) / len(notas)
-
-def estado_aprobacion(promedio):
-    """ Determina si el estudiante está aprobado o reprobado """
-    return "aprobado" if promedio >= 7 else "reprobado"
+from helpers import promedio_notas, estado_aprobacion, calcular_metricas
+from helpers import detectar_atipicos, datos_finales, crear_id, generar_resumen_anual
+from helpers import obtener_ciudades, busqueda_binaria_ids, determinar_periodo
 
 def pedir_nombre():
     """ Agrega nombre al estudiante """
@@ -51,26 +43,40 @@ def pedir_ciudad():
         except ValueError:
             print("Ciudad inválida")
 
-def pedir_notas():
+def pedir_notas(estudiantes):
     """ Agrega notas al estudiante """
-    notas = []
-    for i in range(3):
-        while True:
-            try:
-                nota = float(input(f"Nota {i + 1}: "))
-                if 0 <= nota <= 10:
-                    notas.append(nota)
-                    break
-                raise ValueError
-            except ValueError:
-                print("Nota inválida")
-    return notas
+    periodo = determinar_periodo()
+    if periodo == "cierre":
+        print("\n Año cerrado: no se pueden agregar notas\n")
+        return
+    try:
+        idx = int(input("Ingrese el ID del estudiante: "))
+    except ValueError:
+        print("ID inválido")
+        return
 
-def crear_id(estudiantes):
-    """ Crea ID único para cada estudiante """
-    if not estudiantes:
-        return 1
-    return max(estudiantes.keys()) + 1
+    if idx not in estudiantes:
+        print("Estudiante no encontrado")
+        return
+
+    estudiante = estudiantes[idx]
+    notas = estudiante["notas"]
+
+    for p in range(1, periodo):
+        clave_periodo = f"p{p}"
+        if notas[clave_periodo] is None:
+            notas[clave_periodo] = 1
+
+    while True:
+        try:
+            nota = float(input(f"Nota del periodo {periodo}: "))
+            if 1 <= nota <= 7:
+                notas[clave_periodo] = nota
+                print("Nota registrada")
+                break
+            raise ValueError
+        except ValueError:
+            print("Nota inválida")
 
 def agregar_estudiante(estudiantes):
     """ Agrega estudiante a la lista """
@@ -79,7 +85,11 @@ def agregar_estudiante(estudiantes):
         "nombre": pedir_nombre(),
         "edad": pedir_edad(),
         "ciudad": pedir_ciudad(),
-        "notas": []
+        "notas": {"p1": None,
+                  "p2": None,
+                  "p3": None
+        },
+        "notas_finales": None
     }
     estudiantes[idx] = estudiante
     imprimir_estudiantes(estudiantes)
@@ -102,8 +112,7 @@ def actualizar_estudiante(estudiantes):
             print("1. Nombre")
             print("2. Edad")
             print("3. Ciudad")
-            print("4. Notas")
-            print("5. Salir")
+            print("4. Salir")
             opcion = int(input("Seleccione una opción: "))
             match opcion:
                 case 1:
@@ -116,9 +125,6 @@ def actualizar_estudiante(estudiantes):
                     estudiante["ciudad"] = pedir_ciudad()
                     print("\nCiudad actualizada\n")
                 case 4:
-                    estudiante["notas"] = pedir_notas()
-                    print("\nNotas actualizadas\n")
-                case 5:
                     imprimir_estudiantes(estudiantes)
                     return
                 case _:
@@ -183,10 +189,6 @@ def valorar_estudiante(estudiantes):
         f"ha {estado} con {promedio:.2f}"
     )
 
-def obtener_ciudades(estudiantes):
-    """ Obtiene lista de ciudades únicas """
-    return sorted({e["ciudad"] for e in estudiantes.values()})
-
 def listar_ciudades(estudiantes):
     """ Muestra lista de ciudades """
     ciudades = obtener_ciudades(estudiantes)
@@ -245,19 +247,6 @@ def cargar_estudiantes():
     except FileNotFoundError:
         return {}
 
-def busqueda_binaria_ids(ids, objetivo, inicio, fin):
-    """ Realiza una búsqueda binaria de IDs para usar recursividad """
-    if inicio > fin:
-        return None
-
-    medio = (inicio + fin) // 2
-
-    if ids[medio] == objetivo:
-        return ids[medio]
-    if objetivo < ids[medio]:
-        return busqueda_binaria_ids(ids, objetivo, inicio, medio - 1)
-    return busqueda_binaria_ids(ids, objetivo, medio + 1, fin)
-
 def mostrar_estudiante(estudiantes):
     """ Muestra información de un estudiante específico """
     ids = tuple(sorted(estudiantes.keys()))
@@ -281,52 +270,28 @@ def mostrar_estudiante(estudiantes):
 
 def resumen_estadisticas(estudiantes):
     """ Muestra resumen estadístico de los estudiantes """
-    if not estudiantes:
-        print("No hay estudiantes registrados")
+    datos = datos_finales(estudiantes)
+
+    if not datos:
+        print("No hay datos para generar estadísticas")
         return
 
-    total = len(estudiantes)
-    aprobados = 0
-    reprobados = 0
-    datos_promedios = []
+    metricas = calcular_metricas(datos)
 
-    for idx, estudiante in estudiantes.items():
-        if estudiante["notas"]:
-            promedio = promedio_notas(estudiante["notas"])
-            datos_promedios.append((idx, estudiante['nombre'], promedio))
-            estado = estado_aprobacion(promedio)
-            if estado == "aprobado":
-                aprobados += 1
-            else:
-                reprobados += 1
-
-    if not datos_promedios:
-        print("No hay notas para generar estadísticas")
-        return
-
-    promedios = [p for _, _, p in datos_promedios]
-    promedio_general = sum(promedios) / len(promedios)
-    desviacion = statistics.stdev(promedios) if len(promedios) > 1 else 0
-
-    porcentaje_aprobados = (aprobados / total) * 100
-    porcentaje_reprobados = (reprobados / total) * 100
+    porcentaje_aprobados = (metricas['aprobados'] / metricas['total']) * 100
+    porcentaje_reprobados = (metricas['reprobados'] / metricas['total']) * 100
 
     print("\n---Resumen Estadístico---")
-    print(f"Total de estudiantes: {total}")
-    print(f"Estudiantes aprobados: {aprobados} ({porcentaje_aprobados:.2f}%)")
-    print(f"Estudiantes reprobados: {reprobados} ({porcentaje_reprobados:.2f}%)")
-    print(f"Promedio general de notas: {promedio_general:.2f}\n")
+    print(f"Total de estudiantes: {metricas['total']}")
+    print(f"Estudiantes aprobados: {metricas['aprobados']} ({porcentaje_aprobados:.2f}%)")
+    print(f"Estudiantes reprobados: {metricas['reprobados']} ({porcentaje_reprobados:.2f}%)")
+    print(f"Promedio general de notas: {metricas['promedio_general']:.2f}\n")
 
-    if desviacion == 0:
-        print("No hay suficientes datos para calcular la desviación estándar")
-        return
-
-    umbral = 2*desviacion
-    atipicos = [
-        (idx, nombre, promedio)
-        for idx, nombre, promedio in datos_promedios
-        if abs(promedio - promedio_general) > umbral
-    ]
+    atipicos = detectar_atipicos(
+        datos, 
+        metricas['promedio_general'], 
+        metricas['desviacion']
+    )
 
     if not atipicos:
         print("No hay estudiantes con notas atipicas")
@@ -336,3 +301,58 @@ def resumen_estadisticas(estudiantes):
     print("\n⚠️ Requiere atención! ⚠️\n")
     for idx, nombre, promedio in atipicos:
         print(f"- ID: {idx} | {nombre} ({promedio:.2f})")
+
+def cerrar_temporada_curso(estudiantes):
+    """ Cierra año académico """
+    periodo = determinar_periodo()
+    if periodo != "cierre":
+        return
+
+    for estudiante in estudiantes.values():
+        if estudiante["notas_finales"] is not None:
+            continue
+        notas = estudiante["notas"]
+
+        for p in ("p1", "p2", "p3"):
+            if notas[p] is None:
+                notas[p] = 1
+
+        estudiante["notas_finales"] = (
+            notas["p1"],
+            notas["p2"],
+            notas["p3"]
+        )
+
+    print("\nAño cerrado\n")
+
+def guardar_resumen_anual(estudiantes):
+    """ Transcribir los datos a forma más legible """
+    resumen = generar_resumen_anual(estudiantes)
+
+    if resumen is None:
+        print("\nAño no cerrado\n")
+        return
+
+    with open("resumen_anual.txt", "w", encoding="utf-8") as f:
+        f.write("Resumen Anual\n")
+
+        f.write(f"Total estudiantes: {resumen['total_estudiantes']}\n")
+        f.write(
+            f"Aprobados: {resumen['aprobados']} "
+            f"({resumen['porcentaje_aprobados']:.2f}%)\n"
+        )
+        f.write(
+            f"Reprobados: {resumen['reprobados']} "
+            f"({resumen['porcentaje_reprobados']:.2f}%)\n"
+        )
+        f.write(f"Promedio general: {resumen['promedio_general']:.2f}\n\n")
+
+        if resumen["atipicos"]:
+            f.write("⚠️ Estudiantes con notas atípicas: ⚠️\n")
+            for e in resumen["atipicos"]:
+                f.write(
+                    f"- ID {e['id']} | {e['nombre']} "
+                    f"({e['promedio_final']:.2f})\n"
+                )
+
+    print("\nResumen anual guardado en resumen_anual.txt\n")
