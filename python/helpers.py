@@ -23,7 +23,7 @@ def calcular_metricas(datos):
     """ Calcula métricas de los datos """
     total = len(datos)
     promedios = [p for _, _, p in datos]
-    aprobados = sum(1 for p in promedios if p >= 7)
+    aprobados = sum(1 for p in promedios if p >= 4)
     reprobados = total - aprobados
 
     promedio_general = sum(promedios) / total
@@ -39,24 +39,34 @@ def calcular_metricas(datos):
 
 def detectar_atipicos(datos, promedio_general, desviacion):
     """ Detecta estudiantes con notas atipicas """
-    if desviacion == 0:
+    n = len(datos)
+    if n < 2 or desviacion == 0:
         return []
 
-    umbral = 2*desviacion
+    factor = factor_por_muestra(n)
+    umbral = factor*desviacion
     return [
         (idx, nombre, promedio)
         for idx, nombre, promedio in datos
         if abs(promedio - promedio_general) > umbral
+        and promedio < 4
     ]
 
 def datos_finales(estudiantes):
-    """ Muestra datos finales de los estudiantes """
+    """
+    Datos para estadisticas
+    Usa datos finales si los hay
+    """
     datos = []
 
     for idx, estudiante in estudiantes.items():
-        finales = estudiante.get("notas_finales")
+        actuales = estudiante["notas"]
+        finales = estudiante["notas_finales"]
         if finales is not None:
             promedio = promedio_notas(finales)
+        else:
+            promedio = promedio_notas(actuales)
+        if promedio > 0:
             datos.append((idx, estudiante['nombre'], promedio))
 
     return datos
@@ -135,3 +145,13 @@ def generar_resumen_anual(estudiantes):
             for idx, nombre, promedio in atipicos
         ]
     }
+
+def factor_por_muestra(n):
+    """ Factor corrector del umbral, más acorde a la cantidad de muestras """
+    if n < 5:
+        return 1.0
+    if n < 10:
+        return 1.3
+    if n < 20:
+        return 1.6
+    return 2.0

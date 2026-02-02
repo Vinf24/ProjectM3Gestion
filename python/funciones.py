@@ -65,7 +65,7 @@ def pedir_notas(estudiantes):
     for p in range(1, periodo):
         clave = f"p{p}"
         if notas[clave] is None:
-            notas[clave] = 1
+            notas[clave] = 1.0
 
     clave_periodo = f"p{periodo}"
 
@@ -240,7 +240,7 @@ def json_estudiantes(estudiantes):
     """ Guarda los datos de los estudiantes en un archivo JSON """
     with open("estudiantes.json", "w", encoding="utf-8") as f:
         json.dump(estudiantes, f, ensure_ascii=False, indent=4)
-    print("\nDatos guardados en estudiantes.json")
+    print("Datos guardados en estudiantes.json")
 
 def cargar_estudiantes():
     """ Carga los datos de los estudiantes desde un archivo JSON """
@@ -302,7 +302,7 @@ def resumen_estadisticas(estudiantes):
         return
 
     print("Estudiantes con notas atipicas:")
-    print("\n⚠️ Requiere atención! ⚠️\n")
+    print("¡Requiere atención!")
     for idx, nombre, promedio in atipicos:
         print(f"- ID: {idx} | {nombre} ({promedio:.2f})")
 
@@ -327,7 +327,7 @@ def cerrar_temporada_curso(estudiantes):
             notas["p3"]
         )
 
-    print("\nAño cerrado\n")
+    print("Año cerrado")
     guardar_resumen_anual(estudiantes)
 
 def guardar_resumen_anual(estudiantes):
@@ -358,19 +358,21 @@ def guardar_resumen_anual(estudiantes):
                     f"- ID {e['id']} | {e['nombre']} "
                     f"({e['promedio_final']:.2f})\n"
                 )
+        else:
+            f.write("No hay estudiantes con notas atípicas\n")
 
-    print("\nResumen anual guardado en resumen_anual.txt\n")
+    print("Resumen anual guardado en resumen_anual.txt")
 
 def reiniciar_curso(estudiantes):
     """ Reinicia el curso """
     periodo = determinar_periodo()
     if periodo != 1:
+        print("Solo puedes reiniciar en el primer periodo")
         return
 
     for estudiante in estudiantes.values():
         estudiante["notas"] = {"p1": None, "p2": None, "p3": None}
         estudiante["notas_finales"] = None
-    print("\nCurso reiniciado\n")
+    print("\nCurso reiniciado")
     guardar_resumen_anual(estudiantes)
     json_estudiantes(estudiantes)
-    
