@@ -1,20 +1,21 @@
 """ ARCHIVO PRINCIPAL """
 
 from datos import estudiantes
-from funciones import agregar_estudiante, actualizar_estudiante, mostrar_estudiante
-from funciones import eliminar_estudiante, valorar_estudiante, cerrar_temporada_curso
+from funciones import agregar_estudiante, actualizar_estudiante
+from funciones import eliminar_estudiante, valorar_estudiante, reiniciar_curso
 from funciones import buscar_por_ciudad, json_estudiantes, resumen_estadisticas
-from funciones import pedir_notas, reiniciar_curso
+from funciones import pedir_notas, cerrar_temporada_curso, mostrar_estudiante
 
 while True:
     try:
         # Menú de opciones
         cerrar_temporada_curso(estudiantes)
+        reiniciar_curso(estudiantes)
         print("\n---Opciones---")
         print("Estudiantes: 1. Agregar 2. Actualizar 3. Eliminar")
         print("Estudiantes: 4. Mostrar 5. Valorar 6. Buscar por ciudad")
-        print("Notas: 7. Agregar 8. Resumen estadistico 9. Reiniciar curso")
-        print("10. Salir")
+        print("Notas: 7. Agregar 8. Resumen estadistico")
+        print("9. Salir")
         opcion = int(input("Seleccione una opción: "))
         match opcion:
             case 1:
@@ -34,8 +35,6 @@ while True:
             case 8:
                 resumen_estadisticas(estudiantes)
             case 9:
-                reiniciar_curso(estudiantes)
-            case 10:
                 cerrar_temporada_curso(estudiantes)
                 json_estudiantes(estudiantes)
                 break

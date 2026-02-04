@@ -1,25 +1,25 @@
 Lista de estudiantes:
 
-ID: 3
-Nombre: Diego
-Edad: 19
-Ciudad: Iquique
-Notas: {'p1': 5.0, 'p2': 5.0, 'p3': 7.0}
+ID: 1
+Nombre: Pedro
+Edad: 23
+Ciudad: Santiago
+Notas: {'p1': 1.0, 'p2': 7.0, 'p3': None}
+
+ID: 2
+Nombre: Juan
+Edad: 27
+Ciudad: Talca
+Notas: {'p1': None, 'p2': None, 'p3': None}
 
 ID: 4
 Nombre: Pablo
-Edad: 32
-Ciudad: Arica
-Notas: {'p1': 5.0, 'p2': 7.0, 'p3': 7.0}
+Edad: 19
+Ciudad: Iquique
+Notas: {'p1': None, 'p2': None, 'p3': None}
 
 ID: 5
-Nombre: Jorge
-Edad: 19
-Ciudad: Arica
-Notas: {'p1': 1.0, 'p2': 3.0, 'p3': 7.0}
-
-ID: 7
-Nombre: Lalo
-Edad: 23
-Ciudad: Tacna
-Notas: {'p1': 1.0, 'p2': 5.0, 'p3': 7.0}
+Nombre: Diego
+Edad: 25
+Ciudad: Talca
+Notas: {'p1': None, 'p2': None, 'p3': None}

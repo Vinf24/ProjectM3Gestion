@@ -2,7 +2,7 @@ Resumen Anual
 Total estudiantes: 4
 Aprobados: 3 (75.00%)
 Reprobados: 1 (25.00%)
-Promedio general: 5.00
+Promedio general: 4.79
 
 ⚠️ Estudiantes con notas atípicas: ⚠️
-- ID 5 | Jorge (3.67)
+- ID 5 | Diego (2.33)

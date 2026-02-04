@@ -234,7 +234,7 @@ def buscar_por_ciudad(estudiantes):
     for idx, nombre, edad in resultados:
         print(f"- ID: {idx} | {nombre} ({edad} años)")
 
-    print(f"\nTotal encontrados: {cantidad} estudiante(s)")
+    print(f"Total encontrados: {cantidad} estudiante(s)")
 
 def json_estudiantes(estudiantes):
     """ Guarda los datos de los estudiantes en un archivo JSON """
@@ -367,7 +367,6 @@ def reiniciar_curso(estudiantes):
     """ Reinicia el curso """
     periodo = determinar_periodo()
     if periodo != 1:
-        print("Solo puedes reiniciar en el primer periodo")
         return
 
     for estudiante in estudiantes.values():
@@ -376,3 +375,4 @@ def reiniciar_curso(estudiantes):
     print("\nCurso reiniciado")
     guardar_resumen_anual(estudiantes)
     json_estudiantes(estudiantes)
+    imprimir_estudiantes(estudiantes)
