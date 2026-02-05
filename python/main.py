@@ -16,7 +16,7 @@ while True:
         print("Estudiantes: 4. Mostrar 5. Valorar 6. Buscar por ciudad")
         print("Notas: 7. Agregar 8. Resumen estadistico")
         print("9. Salir")
-        opcion = int(input("Seleccione una opción: "))
+        opcion = int(input("Seleccione una opción: ").strip())
         match opcion:
             case 1:
                 agregar_estudiante(estudiantes)

@@ -8,21 +8,16 @@ from helpers import obtener_ciudades, busqueda_binaria_ids, determinar_periodo
 def pedir_nombre():
     """ Agrega nombre al estudiante """
     while True:
-        try:
-            nombre = input("Nombre del estudiante: ")
-            if nombre.strip() == "":
-                raise ValueError
-            if not nombre.isalpha():
-                raise ValueError
+        nombre = input("Nombre del estudiante: ").strip()
+        if nombre and nombre.isalpha():
             return nombre
-        except ValueError:
-            print("Nombre inválido")
+        print("Nombre inválido")
 
 def pedir_edad():
     """ Agrega edad al estudiante """
     while True:
         try:
-            edad = int(input("Edad del estudiante: "))
+            edad = int(input("Edad del estudiante: ").strip())
             if 18 < edad < 65:
                 return edad
             else:
@@ -33,15 +28,10 @@ def pedir_edad():
 def pedir_ciudad():
     """ Agrega ciudad al estudiante """
     while True:
-        try:
-            ciudad = input("Ciudad del estudiante: ")
-            if ciudad.strip() == "":
-                raise ValueError
-            if not ciudad.isalpha():
-                raise ValueError
+        ciudad = input("Ciudad del estudiante: ").strip()
+        if ciudad and ciudad.isalpha():
             return ciudad
-        except ValueError:
-            print("Ciudad inválida")
+        print("Ciudad inválida")
 
 def pedir_notas(estudiantes):
     """ Agrega notas al estudiante """
@@ -50,7 +40,7 @@ def pedir_notas(estudiantes):
         print("\n Año cerrado: no se pueden agregar notas\n")
         return
     try:
-        idx = int(input("Ingrese el ID del estudiante: "))
+        idx = int(input("Ingrese el ID del estudiante: ").strip())
     except ValueError:
         print("ID inválido")
         return
@@ -71,7 +61,7 @@ def pedir_notas(estudiantes):
 
     while True:
         try:
-            nota = float(input(f"Nota del periodo {periodo}: "))
+            nota = float(input(f"Nota del periodo {periodo}: ").strip())
             if 1 <= nota <= 7:
                 notas[clave_periodo] = nota
                 print("Nota registrada")
@@ -100,7 +90,7 @@ def agregar_estudiante(estudiantes):
 def actualizar_estudiante(estudiantes):
     """ Actualiza datos del estudiante """
     try:
-        idx = int(input("Ingrese el ID del estudiante a actualizar: "))
+        idx = int(input("Ingrese el ID del estudiante a actualizar: ").strip())
     except ValueError:
         print("ID inválido")
         return
@@ -116,7 +106,7 @@ def actualizar_estudiante(estudiantes):
             print("2. Edad")
             print("3. Ciudad")
             print("4. Salir")
-            opcion = int(input("Seleccione una opción: "))
+            opcion = int(input("Seleccione una opción: ").strip())
             match opcion:
                 case 1:
                     estudiante["nombre"] = pedir_nombre()
@@ -139,7 +129,7 @@ def eliminar_estudiante(estudiantes):
     """ Elimina estudiante de la lista """
     while True:
         try:
-            idx = int(input("Ingrese el ID del estudiante a eliminar: "))
+            idx = int(input("Ingrese el ID del estudiante a eliminar: ").strip())
             if idx <= 0:
                 raise ValueError
             break
@@ -170,7 +160,7 @@ def valorar_estudiante(estudiantes):
     """ Muestra valoración del estudiante """
 
     try:
-        idx = int(input("Ingrese el ID del estudiante a valorar: "))
+        idx = int(input("Ingrese el ID del estudiante a valorar: ").strip())
     except ValueError:
         print("ID inválido")
         return
@@ -211,7 +201,7 @@ def buscar_por_ciudad(estudiantes):
         return
     while True:
         try:
-            idx = int(input("Seleccione el número de la ciudad: "))
+            idx = int(input("Seleccione el número de la ciudad: ").strip())
             if not 1 <= idx <= len(ciudades):
                 raise ValueError
             break
@@ -256,7 +246,7 @@ def mostrar_estudiante(estudiantes):
     ids = tuple(sorted(estudiantes.keys()))
 
     try:
-        idx = int(input("Ingrese el ID del estudiante a mostrar: "))
+        idx = int(input("Ingrese el ID del estudiante a mostrar: ").strip())
     except ValueError:
         print("ID inválido")
         return
