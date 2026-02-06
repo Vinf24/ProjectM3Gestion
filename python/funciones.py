@@ -300,7 +300,7 @@ def cerrar_temporada_curso(estudiantes, estado):
     """ Cierra año académico """
     periodo = determinar_periodo()
     if periodo != "cierre" or estado["curso_cerrado"]:
-        return False
+        return
 
     for estudiante in estudiantes.values():
         if estudiante["notas_finales"] is not None:
@@ -320,7 +320,6 @@ def cerrar_temporada_curso(estudiantes, estado):
     print("Año cerrado")
     guardar_resumen_anual(estudiantes)
     estado["curso_cerrado"] = True
-    return True
 
 def guardar_resumen_anual(estudiantes):
     """ Transcribir los datos a forma más legible """
