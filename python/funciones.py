@@ -296,17 +296,17 @@ def resumen_estadisticas(estudiantes):
     for idx, nombre, promedio in atipicos:
         print(f"- ID: {idx} | {nombre} ({promedio:.2f})")
 
-def cerrar_temporada_curso(estudiantes):
+def cerrar_temporada_curso(estudiantes, estado):
     """ Cierra año académico """
     periodo = determinar_periodo()
-    if periodo != "cierre":
-        return
+    if periodo != "cierre" or estado["curso_cerrado"]:
+        return False
 
     for estudiante in estudiantes.values():
         if estudiante["notas_finales"] is not None:
             continue
-        notas = estudiante["notas"]
 
+        notas = estudiante["notas"]
         for p in ("p1", "p2", "p3"):
             if notas[p] is None:
                 notas[p] = 1
@@ -319,6 +319,8 @@ def cerrar_temporada_curso(estudiantes):
 
     print("Año cerrado")
     guardar_resumen_anual(estudiantes)
+    estado["curso_cerrado"] = True
+    return True
 
 def guardar_resumen_anual(estudiantes):
     """ Transcribir los datos a forma más legible """
@@ -355,10 +357,6 @@ def guardar_resumen_anual(estudiantes):
 
 def reiniciar_curso(estudiantes):
     """ Reinicia el curso """
-    periodo = determinar_periodo()
-    if periodo != 1:
-        return
-
     for estudiante in estudiantes.values():
         estudiante["notas"] = {"p1": None, "p2": None, "p3": None}
         estudiante["notas_finales"] = None
@@ -366,3 +364,19 @@ def reiniciar_curso(estudiantes):
     guardar_resumen_anual(estudiantes)
     json_estudiantes(estudiantes)
     imprimir_estudiantes(estudiantes)
+
+def control_ciclo(estudiantes, estado):
+    """ Verifica inicio y cierre del curso """
+    periodo = determinar_periodo()
+
+    if periodo == "cierre" and not estado["curso_cerrado"]:
+        cerrar_temporada_curso(estudiantes, estado)
+        estado["curso_cerrado"] = True
+
+    if periodo == 1 and not estado["curso_reiniciado"]:
+        reiniciar_curso(estudiantes)
+        estado["curso_reiniciado"] = True
+
+    if periodo not in ("cierre", 1):
+        estado["curso_cerrado"] = False
+        estado["curso_reiniciado"] = False

@@ -1,16 +1,21 @@
 """ ARCHIVO PRINCIPAL """
 
 from datos import estudiantes
-from funciones import agregar_estudiante, actualizar_estudiante
-from funciones import eliminar_estudiante, valorar_estudiante, reiniciar_curso
-from funciones import buscar_por_ciudad, json_estudiantes, resumen_estadisticas
-from funciones import pedir_notas, cerrar_temporada_curso, mostrar_estudiante
+from funciones import (
+agregar_estudiante, actualizar_estudiante, eliminar_estudiante,
+mostrar_estudiante, valorar_estudiante, buscar_por_ciudad,
+pedir_notas, resumen_estadisticas, json_estudiantes,
+cerrar_temporada_curso, control_ciclo
+)
+estado_curso = {
+    "curso_cerrado": False,
+    "curso_reiniciado": False
+}
 
 while True:
     try:
-        # Menú de opciones
-        cerrar_temporada_curso(estudiantes)
-        reiniciar_curso(estudiantes)
+        control_ciclo(estudiantes, estado_curso)
+
         print("\n---Opciones---")
         print("Estudiantes: 1. Agregar 2. Actualizar 3. Eliminar")
         print("Estudiantes: 4. Mostrar 5. Valorar 6. Buscar por ciudad")
@@ -35,7 +40,7 @@ while True:
             case 8:
                 resumen_estadisticas(estudiantes)
             case 9:
-                cerrar_temporada_curso(estudiantes)
+                cerrar_temporada_curso(estudiantes, estado_curso)
                 json_estudiantes(estudiantes)
                 break
             case _:

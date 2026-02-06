@@ -4,8 +4,8 @@
         "edad": 23,
         "ciudad": "Santiago",
         "notas": {
-            "p1": 1.0,
-            "p2": 7.0,
+            "p1": null,
+            "p2": null,
             "p3": null
         },
         "notas_finales": null

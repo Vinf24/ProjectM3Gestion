@@ -4,7 +4,7 @@ ID: 1
 Nombre: Pedro
 Edad: 23
 Ciudad: Santiago
-Notas: {'p1': 1.0, 'p2': 7.0, 'p3': None}
+Notas: {'p1': None, 'p2': None, 'p3': None}
 
 ID: 2
 Nombre: Juan
